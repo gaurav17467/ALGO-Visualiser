@@ -1,0 +1,292 @@
+<html>
+<head>
+	<title>algorithm visualizer</title>
+	<style type="text/css">
+		#dmain
+		{
+			margin-left:300px;
+		}
+		#d1,#d2,#d3,#d4,#d5,#d6,#d7,#d8,#d9,#d10,#d11,#d12,#d13,#d14,#d15,#d16,#d17,#d18,#d19,#d20,#d21,#d22,#d23,#d24,#d25
+		{
+			border:2px solid black;
+			height:50px;
+			width:50px;
+			float:left;
+		}
+		#d1,#d6,#d11,#d16,#d21
+		{
+			clear:left;
+		}
+	</style>
+	<script>
+		class Queue
+		{
+            constructor()
+            {
+            	this.items = [];
+            }
+            isEmpty()
+            {
+            	return this.items.length == 0;
+            }    
+            enqueue(element){    
+                this.items.push(element);
+            }
+            dequeue()
+            {
+            	if(this.isEmpty())
+            		return "Underflow";
+            	return this.items.shift();
+            }
+            front()
+            {
+            	if(this.isEmpty())
+            		return "No elements in Queue";
+            	return this.items[0];
+            }
+            
+        }
+		var start_i=-1,start_j=-1,end_i=-1,end_j=-1;
+		var a=false,b=false,c=false;
+		var visit=[
+		           [1,1,1,1,1],
+		           [1,1,1,1,1],
+		           [1,1,1,1,1],
+		           [1,1,1,1,1],
+		           [1,1,1,1,1]
+		        ];
+		var distance=[
+		           [100,100,100,100,100],
+		           [100,100,100,100,100],
+		           [100,100,100,100,100],
+		           [100,100,100,100,100],
+		           [100,100,100,100,100]
+		        ];
+
+		function start()
+		{
+			if(a==false)
+			{
+				a=true;
+				b=false;
+				c=false;
+			}
+		}
+		function end()
+		{
+			if(b==false)
+			{
+				a=false;
+				b=true;
+				c=false;
+			}
+		}
+		function make()
+		{
+			if(c==false)
+			{
+				a=false;
+				b=false;
+				c=true;
+			}
+		}
+		function build(control)
+		{
+			var a1=control.id;
+			var a2=a1.substr(1);
+			var a3=parseInt(a2);
+			a3=a3-1;
+			var a4=a3/5;
+			var a5=parseInt(a4);
+			var a6=a3%5;
+			
+			if(a==true&&start_i==-1&&start_j==-1&&visit[a5][a6]!=0&&((a5!=end_i)||(a6!=end_j)))
+			{
+				start_i=a5;
+				start_j=a6;
+				document.getElementById(control.id).innerHTML='S';
+				distance[start_i][start_j]=0;
+			}
+			if(b==true&&end_i==-1&&end_j==-1&&visit[a5][a6]!=0&&
+				((a5!=start_i)||(a6!=start_j)))
+			{
+				end_i=a5;
+				end_j=a6;
+				document.getElementById(control.id).innerHTML='E';
+			}
+			if(c==true&&(a5!=start_i||a6!=start_j)&&(a5!=end_i||a6!=end_j))
+			{
+				visit[a5][a6]=0;
+				document.getElementById(control.id).style.backgroundColor='black';
+			}
+
+		}
+		function reset()
+		{
+			start_i=-1;
+			//console.log(start_i);
+			start_j=-1;
+			//console.log(start_j);
+			end_i=-1;
+			//console.log(end_i);
+			end_j=-1;
+			//console.log(end_j);
+			a=false;
+			//console.log(a);
+			b=false;
+			//console.log(b);
+			c=false;
+			//console.log(c);
+			for(var i=0;i<visit.length;i++)
+			{
+				for(var j=0;j<visit[i].length;j++)
+				{
+					visit[i][j]=1;
+					var xp=(i*5)+j+1;
+					document.getElementById('d'+xp).style.backgroundColor="white";
+					document.getElementById('d'+xp).innerHTML="";
+				}
+			}
+		}
+		function bfs()
+		{
+			var q=new Queue();
+			var st=(start_i*5)+start_j+1;
+			document.getElementById('d'+st).style.backgroundColor='blue';
+			var st1=(end_i*5)+end_j+1;
+			q.enqueue(st);
+			while(!q.isEmpty())
+			{
+				var w=q.front();
+				q.dequeue();
+				if(st1==w)
+				{
+					break;
+				}
+				w=w-1;
+				var c_i=w/5;
+				var current_i=parseInt(c_i);
+				var current_j=w%5;
+				visit[current_i][current_j]=0;
+				if(current_i>0&&visit[current_i-1][current_j]==1)
+			    {
+			    	var pp=((current_i-1)*5)+current_j+1;
+			    	q.enqueue(pp);
+			    	document.getElementById('d'+pp).style.backgroundColor='blue';
+				    distance[current_i-1][current_j]=1+distance[current_i][current_j];
+			    }
+			    if(current_j>0&&visit[current_i][current_j-1]==1)
+			    {
+			    	var pp=(current_i*5)+current_j;
+			    	q.enqueue(pp);
+			    	document.getElementById('d'+pp).style.backgroundColor='blue';
+				    distance[current_i][current_j-1]=1+distance[current_i][current_j];
+			    }
+			    if(current_i<4&&visit[current_i+1][current_j]==1)
+			    {
+			    	var pp=((current_i+1)*5)+current_j+1;
+			    	q.enqueue(pp);
+			    	document.getElementById('d'+pp).style.backgroundColor='blue';
+			    	distance[current_i+1][current_j]=1+distance[current_i][current_j];
+			    }
+			    if(current_j<4&&visit[current_i][current_j+1]==1)
+			    {
+			    	var pp=(current_i*5)+current_j+2;
+			    	q.enqueue(pp);
+			    	document.getElementById('d'+pp).style.backgroundColor='blue';
+			    	distance[current_i][current_j+1]=1+distance[current_i][current_j];
+			    }
+			}
+
+
+			    var dist=distance[end_i][end_j];
+				var v=end_i,w=end_j;
+				var wp=(v*5)+w+1;
+				document.getElementById('d'+wp).style.backgroundColor="green";
+				console.log(v);
+				console.log(w);
+				while(dist!=0)
+				{
+					if(v>0&&distance[v-1][w]==dist-1)
+					{
+						var wap=((v-1)*5)+w+1;
+						document.getElementById('d'+wap).style.backgroundColor="green";
+						v=v-1;
+						dist=dist-1;
+						console.log(v);
+				console.log(w);
+					}
+					else if(w>0&&distance[v][w-1]==dist-1)
+					{
+						var wap=(v*5)+w;
+						document.getElementById('d'+wap).style.backgroundColor="green";
+						w=w-1;
+						dist=dist-1;
+						console.log(v);
+				console.log(w);
+					}
+					else if(v<4&&distance[v+1][w]==dist-1)
+					{
+						var wap=((v+1)*5)+w+1;
+						document.getElementById('d'+wap).style.backgroundColor="green";
+						v=v+1;
+						dist=dist-1;
+						console.log(v);
+				console.log(w);
+					}
+					else if(w<4&&distance[v][w+1]==dist-1)
+					{
+						var wap=(v*5)+w+2;
+						document.getElementById('d'+wap).style.backgroundColor="green";
+						w=w+1;
+						dist=dist-1;
+						console.log(v);
+				console.log(w);
+					}
+				}
+				var cp=(start_i*5)+start_j+1;
+				document.getElementById('d'+cp).style.backgroundColor="green";
+				console.log(start_i);
+				console.log(start_j);
+				
+
+		}
+
+	</script>
+</head>
+<body>
+	<button id="b1" onclick="start()">start point</button>
+	<button id="b2" onclick="end()">end point</button>
+	<button id="b3" onclick="make()">build walls</button>
+	<button id="b4" onclick="reset()">reset</button>
+	<button id="b6" onclick="bfs()">bfs</button>
+	<div id="dmain">
+		<div id="d1" onclick="build(this)"></div>
+		<div id="d2" onclick="build(this)"></div>
+		<div id="d3" onclick="build(this)"></div>
+		<div id="d4" onclick="build(this)"></div>
+		<div id="d5" onclick="build(this)"></div>
+		<div id="d6" onclick="build(this)"></div>
+		<div id="d7" onclick="build(this)"></div>
+		<div id="d8" onclick="build(this)"></div>
+		<div id="d9" onclick="build(this)"></div>
+		<div id="d10" onclick="build(this)"></div>
+		<div id="d11" onclick="build(this)"></div>
+		<div id="d12" onclick="build(this)"></div>
+		<div id="d13" onclick="build(this)"></div>
+		<div id="d14" onclick="build(this)"></div>
+		<div id="d15" onclick="build(this)"></div>
+		<div id="d16" onclick="build(this)"></div>
+		<div id="d17" onclick="build(this)"></div>
+		<div id="d18" onclick="build(this)"></div>
+		<div id="d19" onclick="build(this)"></div>
+		<div id="d20" onclick="build(this)"></div>
+		<div id="d21" onclick="build(this)"></div>
+		<div id="d22" onclick="build(this)"></div>
+		<div id="d23" onclick="build(this)"></div>
+		<div id="d24" onclick="build(this)"></div>
+		<div id="d25" onclick="build(this)"></div>
+	</div>
+
+</body>
+</html>
